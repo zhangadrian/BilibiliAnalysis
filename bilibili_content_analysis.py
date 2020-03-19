@@ -435,6 +435,8 @@ class BilibiliAnalysis:
             result_dict["danmu"].append(video_info_dict["danmu_num"])
             result_dict["like"].append(video_info_dict["like_num"])
             result_dict["favorite"].append(video_info_dict["favorite_num"])
+        res_str = ','.join([str(i) for i in result_dict["view"]])
+        print(res_str)
         for key in result_dict:
             image_path = "./" + key + ".jpg"
             x_label_name = key+ " number"
