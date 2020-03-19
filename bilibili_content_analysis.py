@@ -29,7 +29,7 @@ class BilibiliAnalysis:
         # 创建直方图
         # 第一个参数为待绘制的定量数据，不同于定性数据，这里并没有事先进行频数统计
         # 第二个参数为划分的区间个数
-
+        pyplot.cla()
         pyplot.hist(heights, hist_num)
         pyplot.xlabel(x_label_name)
         pyplot.ylabel(y_label_name)
@@ -37,6 +37,7 @@ class BilibiliAnalysis:
         pyplot.show()
 
         pyplot.savefig(image_path)
+        pyplot.close()
 
     @staticmethod
     def draw_bar(data_array, x_label_name, y_label_name, title_str, image_path, xticks):
@@ -64,6 +65,7 @@ class BilibiliAnalysis:
         pyplot.title(title_str)
         pyplot.show()
         pyplot.savefig(image_path)
+        pyplot.close()
 
     def cal_gini(self, data_dict):
         import numpy as np
@@ -466,16 +468,14 @@ class BilibiliAnalysis:
             result_dict["favorite"].append(video_info_dict["favorite_num"])
         res_str = ','.join([str(i) for i in result_dict["view"]])
         for key in result_dict:
-            image_path = "./" + key + "_bar.jpg"
+            hist_image_path = "./" + key + "_hist.jpg"
+            bar_image_path = "./" + key + "_bar.jpg"
             x_label_name = key + " number"
             y_label_name = "video number"
             title_str = key + " statistics"
             hist_num = 10
-            print(key)
-            print(result_dict[key])
-            print(xtick_dict[key])
-            # self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, image_path, hist_num)
-            self.draw_bar(result_dict[key], x_label_name, y_label_name, title_str, image_path, xtick_dict[key])
+            self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, hist_image_path, hist_num)
+            self.draw_bar(result_dict[key], x_label_name, y_label_name, title_str, bar_image_path, xtick_dict[key])
 
 
 if __name__ == "__main__":
