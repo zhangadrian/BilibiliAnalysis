@@ -23,6 +23,21 @@ class BilibiliAnalysis:
 
         return input_list
 
+    @staticmethod
+    def draw_hist(heights, x_label_name, y_label_name, title_str, image_path, hist_num=10):
+        from matplotlib import pyplot
+        # 创建直方图
+        # 第一个参数为待绘制的定量数据，不同于定性数据，这里并没有事先进行频数统计
+        # 第二个参数为划分的区间个数
+
+        pyplot.hist(heights, hist_num)
+        pyplot.xlabel(x_label_name)
+        pyplot.ylabel(y_label_name)
+        pyplot.title(title_str)
+        pyplot.show()
+
+        pyplot.savefig(image_path)
+
     def cal_gini(self, data_dict):
         import numpy as np
 
@@ -351,7 +366,7 @@ class BilibiliAnalysis:
 
     def video_feature(self, input_dict):
         import os
-        from collections import defaultdict
+
         video_path = self.src_video_path
         video_file_list = os.listdir(video_path)
         video_view_list = []
@@ -384,6 +399,48 @@ class BilibiliAnalysis:
                         keyword_video_dict[keyword] = {video_id: str(view_num) + "_" + str(0.0)}
         return video_view_list, keyword_video_dict
 
+    def video_statistic(self):
+        import os
+
+        video_path = self.src_video_path
+        video_file_list = os.listdir(video_path)
+
+        view_list = []
+        duration_list = []
+        comment_num_list = []
+        danmu_num_list = []
+        like_num_list = []
+        favoriate_num_list = []
+
+        result_dict = {
+            "view": view_list,
+            "duration": duration_list,
+            "comment": comment_num_list,
+            "danmu": danmu_num_list,
+            "like": like_num_list,
+            "favorite": favoriate_num_list,
+        }
+
+        for index, video_file_name in enumerate(video_file_list):
+            if index % 10 == 0:
+                print(index)
+            video_id = video_file_name.replace('.pkl', '')
+            _, _, info_dict, user_info, video_info = self.meta_analysis(video_id)
+            video_info_dict = self.extract_video_info(info_dict, user_info, video_info)
+            result_dict["view"].append(video_info_dict["view_num"])
+            result_dict["duration"].append(video_info_dict["video_duration"])
+            result_dict["comment"].append(video_info_dict["reply_num"])
+            result_dict["danmu"].append(video_info_dict["danmu_num"])
+            result_dict["like"].append(video_info_dict["like_num"])
+            result_dict["favorite"].append(video_info_dict["favorite_num"])
+        for key in result_dict:
+            image_path = "./" + key + ".jpg"
+            x_label_name = key+ " number"
+            y_label_name = "video number"
+            title_str = key + " statistics"
+            hist_num = 10
+            self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, image_path, hist_num)
+
 
 if __name__ == "__main__":
     import sys
@@ -397,6 +454,7 @@ if __name__ == "__main__":
     full_dest_file_path = dest_file_path.split(".")[0]+"_full.pkl"
 
     bilibili_analysis = BilibiliAnalysis(src_dir_path, src_video_path)
+    bilibili_analysis.video_statistic()
     if not os.path.exists(dest_file_path):
         res_dict = bilibili_analysis.get_keyword_freq()
         with open(dest_file_path, 'wb') as dest_file:
