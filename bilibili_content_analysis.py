@@ -425,6 +425,8 @@ class BilibiliAnalysis:
             if index % 10 == 0:
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
+            if not os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")):
+                continue
             _, _, info_dict, user_info, video_info = self.meta_analysis(video_id)
             video_info_dict = self.extract_video_info(info_dict, user_info, video_info)
             result_dict["view"].append(video_info_dict["view_num"])
