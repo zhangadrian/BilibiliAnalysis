@@ -22,6 +22,8 @@ def extract_file(src_dir_path, dest_dir_path):
     print(src_dir_path)
     if os.path.exists(os.path.join(dest_dir_path, 'top.jpg')):
         return 0
+    if len(os.listdir(src_dir_path)) == 0:
+        return 0
     try:
         src_video_dir = os.path.join(src_dir_path, [dir_path for dir_path in os.listdir(src_dir_path) if
                                                     os.path.isdir(os.path.join(src_dir_path, dir_path))][0])
@@ -63,8 +65,8 @@ def get_file_list(dir_item):
 
 
 if __name__ == "__main__":
-    dir_path = './抗击肺炎大作战'
-    dest_dir_path = './get_image_test'
+    dir_path = '/data/adhcczhang/bilibili/抗击肺炎大作战'
+    dest_dir_path = '/data/adhcczhang/bilibili/get_image_test'
     pool = mp.Pool(8)
     if not os.path.exists(dest_dir_path):
         os.makedirs(dest_dir_path)

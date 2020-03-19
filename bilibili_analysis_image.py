@@ -1,7 +1,8 @@
 # --coding:utf-8--
 
+import os
 import pickle
-
+import multiprocessing as mp
 
 class Bilibili_ai:
     def __init__(self):
@@ -91,7 +92,7 @@ class Bilibili_ai:
                 continue
             time.sleep(0.1)
             with open(file_path, 'rb') as image_file:
-                try_num = 5
+                try_num = 2
                 image_id = basename(file_path)
                 for i in range(try_num):
                     # result_data = self.baidu_image(image_file)
@@ -117,12 +118,10 @@ class Bilibili_ai:
 
 
 if __name__ == "__main__":
-    import multiprocessing as mp
-
     from os import listdir, makedirs
     from os.path import join, isdir, exists
-    src_dir_path = "/Users/adhcczhang/Desktop/codes/webscrap/get_image_ai_test"
-    dest_dir_path = "/Users/adhcczhang/Desktop/codes/webscrap/get_image_ai_result"
+    src_dir_path = "/data/adhcczhang/bilibili/get_image_test"
+    dest_dir_path = "/data/adhcczhang/bilibili/get_image_ai_result"
     if not exists(dest_dir_path):
         makedirs(dest_dir_path)
     ai_test = Bilibili_ai()

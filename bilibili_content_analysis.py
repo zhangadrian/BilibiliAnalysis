@@ -355,9 +355,10 @@ class BilibiliAnalysis:
         video_path = self.src_video_path
         video_file_list = os.listdir(video_path)
         video_view_list = []
-        keyword_video_dict = dict
+        keyword_video_dict = {}
         for index, video_file_name in enumerate(video_file_list):
             if index % 10 == 0:
+                print("Video feature.")
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
             if not os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")):
@@ -396,29 +397,29 @@ if __name__ == "__main__":
     full_dest_file_path = dest_file_path.split(".")[0]+"_full.pkl"
 
     bilibili_analysis = BilibiliAnalysis(src_dir_path, src_video_path)
-    res_dict = bilibili_analysis.get_keyword_freq()
     if not os.path.exists(dest_file_path):
+        res_dict = bilibili_analysis.get_keyword_freq()
         with open(dest_file_path, 'wb') as dest_file:
             pickle.dump(res_dict, dest_file)
     else:
         with open(dest_file_path, 'rb') as dest_file:
             res_dict = pickle.load(dest_file)
-    video_view_list, keyword_video_dict = bilibili_analysis.video_feature(res_dict["top_video_key_word"])
 
-    median = bilibili_analysis.get_median(video_view_list)
-    static_keyword_dict ={}
-    for keyword in keyword_video_dict:
-        video_dict = keyword_video_dict[keyword]
-        gini_index = bilibili_analysis.cal_gini(video_dict)
-        group_1, group_2 = bilibili_analysis.sep_data(video_dict, median)
-        statistics, p_value = bilibili_analysis.t_test(group_1, group_2)
-        temp_key_dict = {
-            "gini_index": gini_index,
-            "p_value": p_value
-        }
-        static_keyword_dict[keyword] = temp_key_dict
+    if not os.path.exists(full_dest_file_path):
+        video_view_list, keyword_video_dict = bilibili_analysis.video_feature(res_dict["top_video_key_word"])
 
-    if not os.path.exists(dest_file_path):
+        median = bilibili_analysis.get_median(video_view_list)
+        static_keyword_dict ={}
+        for keyword in keyword_video_dict:
+            video_dict = keyword_video_dict[keyword]
+            gini_index = bilibili_analysis.cal_gini(video_dict)
+            group_1, group_2 = bilibili_analysis.sep_data(video_dict, median)
+            statistics, p_value = bilibili_analysis.t_test(group_1, group_2)
+            temp_key_dict = {
+                "gini_index": gini_index,
+                "p_value": p_value
+            }
+            static_keyword_dict[keyword] = temp_key_dict
         with open(full_dest_file_path, 'wb') as dest_file:
             pickle.dump([res_dict, video_view_list, keyword_video_dict, static_keyword_dict], dest_file)
     else:

@@ -78,15 +78,12 @@ class Bilibili:
                 text_dict = json.loads(text)
 
                 if 'data' not in text_dict:
-                    print('data')
                     continue
                 if 'replies' not in text_dict['data']:
-                    print('replies')
                     continue
                 replies = text_dict['data']['replies']
                 if not replies:
                     continue
-
                 for reply in replies:
                     reply_dict = {
                         'user_name': reply['member']['uname'],
@@ -188,9 +185,6 @@ class Bilibili:
 
     def download_video(self, oid, quality, oid_dir_path):
         import requests, hashlib, urllib.request, re
-        import imageio
-        imageio.plugins.ffmpeg.download()
-        from moviepy.editor import concatenate_videoclips, VideoFileClip
         import os
         import sys
 
@@ -244,20 +238,6 @@ class Bilibili:
                     urllib.request.urlretrieve(url=i, filename=os.path.join(currentVideoPath, r'{}_1.flv'.format(title)))  # 写成mp4也行  title + '-' + num + '.flv'
                 num += 1
 
-        def combine_video(video_list, title):
-            current_video_path = os.path.join(oid_dir_path, 'bilibili_video', title)
-
-            if len(video_list) > 1:
-                video_file_list = []
-                root_dir = current_video_path
-
-                for file in sorted(os.listdir(root_dir), key=lambda x: int(x[x.rindex("_") + 1: x.rindex(".")])):
-                    if os.path.splitext(file)[1] == '.mp4':
-                        file_path = os.path.join(root_dir, file)
-                        video = VideoFileClip(file_path)
-                        video_file_list.append(video)
-                final_clip = concatenate_videoclips(video_file_list)
-                final_clip.to_videofile(os.path.join(root_dir, '{}.mp4'.format(title)), fps=24, remove_temp=False)
 
         video_url = 'https://api.bilibili.com/x/web-interface/view?aid='+oid
         headers = {
@@ -280,7 +260,6 @@ class Bilibili:
 
             video_list = get_playlist(video_url, cid, quality)
             get_video(video_list, title, video_url, page)
-            combine_video(video_list, title)
         return data
 
     def download_search_list(self, search_word):
