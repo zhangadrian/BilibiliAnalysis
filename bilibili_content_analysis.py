@@ -59,7 +59,7 @@ class BilibiliAnalysis:
         pyplot.xlabel(x_label_name)
         pyplot.ylabel(y_label_name)
         pyplot.title(title_str)
-        # pyplot.show()
+        pyplot.show()
         pyplot.savefig(image_path)
 
     def cal_gini(self, data_dict):
