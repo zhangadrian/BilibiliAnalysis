@@ -46,7 +46,7 @@ class BilibiliAnalysis:
         # xticks = []
         # for i in range(0, 10001, 10):
         #     xticks.append(i)
-
+        xticks = [str(i) for i in xticks]
         bar_num = defaultdict(int)
         print(data_array)
         for data in data_array:
@@ -54,6 +54,9 @@ class BilibiliAnalysis:
                 if int(xticks[i]) > data >= int(xticks[i - 1]):
                     bar_num[xticks[i]] += 1
         xticks = xticks[1:]
+        print(bar_num)
+        test_array = [bar_num[xtick] for xtick in xticks]
+        print(test_array)
         pyplot.bar(xticks, [bar_num[xtick] for xtick in xticks], align='center')
 
         pyplot.xlabel(x_label_name)
