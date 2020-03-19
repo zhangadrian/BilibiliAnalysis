@@ -38,6 +38,29 @@ class BilibiliAnalysis:
 
         pyplot.savefig(image_path)
 
+    @staticmethod
+    def draw_bar(data_array, x_label_name, y_label_name, title_str, image_path, xticks):
+        from collections import defaultdict
+        from matplotlib import pyplot
+        #xticks = ['0', '10', '50', '100', '1000', '2000', ]
+        # xticks = []
+        # for i in range(0, 10001, 10):
+        #     xticks.append(i)
+
+        bar_num = defaultdict(int)
+        for data in data_array:
+            for i in range(1, len(xticks)):
+                if int(xticks[i]) > data >= int(xticks[i - 1]):
+                    bar_num[xticks[i]] += 1
+        xticks = xticks[1:]
+        pyplot.bar(xticks, [bar_num[xtick] for xtick in xticks], align='center')
+
+        pyplot.xlabel(x_label_name)
+        pyplot.ylabel(y_label_name)
+        pyplot.title(title_str)
+        # pyplot.show()
+        pyplot.savefig(image_path)
+
     def cal_gini(self, data_dict):
         import numpy as np
 
@@ -421,6 +444,15 @@ class BilibiliAnalysis:
             "favorite": favoriate_num_list,
         }
 
+        xtick_dict = {
+            "view": [0, 10, 100, 200, 500, 1000, 2000, 10000, 100000, 1000000],
+            "duration": [0, 30, 60, 300, 600],
+            "comment": [0, 10, 30, 50, 100, 500],
+            "danmu": [0, 10, 100, 200, 500, 1000],
+            "like": [0, 10, 100, 200, 500, 1000, 2000, 10000],
+            "favorite": [0, 10, 100, 200, 500, 1000, 2000, 10000],
+        }
+
         for index, video_file_name in enumerate(video_file_list):
             if index % 10 == 0:
                 print(index)
@@ -438,12 +470,13 @@ class BilibiliAnalysis:
         res_str = ','.join([str(i) for i in result_dict["view"]])
         print(res_str)
         for key in result_dict:
-            image_path = "./" + key + ".jpg"
+            image_path = "./" + key + "_bar.jpg"
             x_label_name = key+ " number"
             y_label_name = "video number"
             title_str = key + " statistics"
             hist_num = 10
-            self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, image_path, hist_num)
+            # self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, image_path, hist_num)
+            self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, image_path, xtick_dict[key])
 
 
 if __name__ == "__main__":
