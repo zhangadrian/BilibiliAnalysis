@@ -453,7 +453,7 @@ if __name__ == "__main__":
     src_dir_path = args[1]
     src_video_path = args[2]
     dest_file_path = args[3]
-    full_dest_file_path = dest_file_path.split(".")[0]+"_full.pkl"
+    full_dest_file_path = dest_file_path.split(".pkl")[0]+"_full.pkl"
 
     bilibili_analysis = BilibiliAnalysis(src_dir_path, src_video_path)
     bilibili_analysis.video_statistic()
