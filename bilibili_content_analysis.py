@@ -48,6 +48,7 @@ class BilibiliAnalysis:
         #     xticks.append(i)
 
         bar_num = defaultdict(int)
+        print(data_array)
         for data in data_array:
             for i in range(1, len(xticks)):
                 if int(xticks[i]) > data >= int(xticks[i - 1]):
@@ -461,15 +462,17 @@ class BilibiliAnalysis:
             result_dict["like"].append(video_info_dict["like_num"])
             result_dict["favorite"].append(video_info_dict["favorite_num"])
         res_str = ','.join([str(i) for i in result_dict["view"]])
-        print(res_str)
         for key in result_dict:
             image_path = "./" + key + "_bar.jpg"
             x_label_name = key + " number"
             y_label_name = "video number"
             title_str = key + " statistics"
             hist_num = 10
+            print(key)
+            print(result_dict[key])
+            print(xtick_dict[key])
             # self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, image_path, hist_num)
-            self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, image_path, xtick_dict[key])
+            self.draw_bar(result_dict[key], x_label_name, y_label_name, title_str, image_path, xtick_dict[key])
 
 
 if __name__ == "__main__":
