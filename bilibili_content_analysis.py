@@ -428,20 +428,13 @@ class BilibiliAnalysis:
         video_path = self.src_video_path
         video_file_list = os.listdir(video_path)
 
-        view_list = []
-        duration_list = []
-        comment_num_list = []
-        danmu_num_list = []
-        like_num_list = []
-        favoriate_num_list = []
-
         result_dict = {
-            "view": view_list,
-            "duration": duration_list,
-            "comment": comment_num_list,
-            "danmu": danmu_num_list,
-            "like": like_num_list,
-            "favorite": favoriate_num_list,
+            "view": [],
+            "duration": [],
+            "comment": [],
+            "danmu": [],
+            "like": [],
+            "favorite": [],
         }
 
         xtick_dict = {
@@ -471,7 +464,7 @@ class BilibiliAnalysis:
         print(res_str)
         for key in result_dict:
             image_path = "./" + key + "_bar.jpg"
-            x_label_name = key+ " number"
+            x_label_name = key + " number"
             y_label_name = "video number"
             title_str = key + " statistics"
             hist_num = 10
