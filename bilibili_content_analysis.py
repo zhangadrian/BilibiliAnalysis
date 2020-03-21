@@ -49,15 +49,12 @@ class BilibiliAnalysis:
         #     xticks.append(i)
         xticks = [str(i) for i in xticks]
         bar_num = defaultdict(int)
-        print(data_array)
         for data in data_array:
             for i in range(1, len(xticks)):
                 if int(xticks[i]) > data >= int(xticks[i - 1]):
                     bar_num[xticks[i]] += 1
         xticks = xticks[1:]
-        print(bar_num)
         test_array = [bar_num[xtick] for xtick in xticks]
-        print(test_array)
         pyplot.bar(xticks, [bar_num[xtick] for xtick in xticks], align='center')
 
         pyplot.xlabel(x_label_name)
@@ -131,7 +128,7 @@ class BilibiliAnalysis:
 
         res_root_dict = defaultdict(int)
         res_keyword_dict = defaultdict(int)
-        res_weight_dict = defaultdict(int)
+        res_weight_dict = defaultdict(float)
         with open(os.path.join(self.src_video_path, video_id + '.pkl'), 'rb') as video_data_file:
             video_data = pickle.load(video_data_file)
             # frame_num = len(video_data)
@@ -142,7 +139,7 @@ class BilibiliAnalysis:
                     for result in frame_result:
                         res_root_dict[result["root"]] += 1
                         res_keyword_dict[result["keyword"]] += 1
-                        res_root_dict[result["keyword"]] += result["score"]
+                        res_weight_dict[result["keyword"]] += result["score"]
                 except Exception as e:
                     print(e)
                     print(frame_data)
@@ -262,7 +259,7 @@ class BilibiliAnalysis:
         face_data_path = os.path.join(self.src_dir_path, video_id, video_id + "_face.pkl")
         face_root_dict = defaultdict(int)
         face_keyword_dict = defaultdict(int)
-        face_weight_dict = defaultdict(int)
+        face_weight_dict = defaultdict(float)
         if os.path.exists(face_data_path):
             with open(face_data_path, 'rb') as face_data_file:
                 face_data = pickle.load(face_data_file)
@@ -325,7 +322,8 @@ class BilibiliAnalysis:
         video_path = self.src_video_path
         video_file_list = os.listdir(video_path)
         for index, video_file_name in enumerate(video_file_list):
-            if index % 10 == 0:
+            if index % 10000000000000000001 == 0:
+                print("get_keyword_freq")
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
             if not os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")):
@@ -401,7 +399,7 @@ class BilibiliAnalysis:
         video_view_list = []
         keyword_video_dict = {}
         for index, video_file_name in enumerate(video_file_list):
-            if index % 10 == 0:
+            if index % 10000000001 == 0:
                 print("Video feature.")
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
@@ -412,11 +410,13 @@ class BilibiliAnalysis:
             video_info_dict = self.extract_video_info(info_dict, user_info, video_info)
             view_num = video_info_dict["view_num"]
             video_view_list.append(view_num)
+            test = 0
             for keyword in input_dict:
                 if keyword in video_keyword_dict:
                     show_num = video_keyword_dict[keyword]
                     score_num = video_weight_dict[keyword]
-                    avg_score = score_num / show_num
+                    avg_score = float(score_num) / float(show_num)
+                    test += 1
                     if keyword in keyword_video_dict:
                         keyword_video_dict[keyword][video_id] = str(view_num) + "_" + str(avg_score)
                     else:
@@ -426,6 +426,7 @@ class BilibiliAnalysis:
                         keyword_video_dict[keyword][video_id] = str(view_num) + "_" + str(0.0)
                     else:
                         keyword_video_dict[keyword] = {video_id: str(view_num) + "_" + str(0.0)}
+        print(keyword_video_dict)
         return video_view_list, keyword_video_dict
 
     def video_statistic(self):
@@ -455,7 +456,7 @@ class BilibiliAnalysis:
         }
 
         for index, video_file_name in enumerate(video_file_list):
-            if index % 10 == 0:
+            if index % 1000000000000001 == 0:
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
             if not os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")):
@@ -493,7 +494,6 @@ if __name__ == "__main__":
     full_dest_file_path = dest_file_path.split(".pkl")[0]+"_full.pkl"
 
     bilibili_analysis = BilibiliAnalysis(src_dir_path, src_video_path)
-    bilibili_analysis.video_statistic()
     if not os.path.exists(dest_file_path):
         res_dict = bilibili_analysis.get_keyword_freq()
         with open(dest_file_path, 'wb') as dest_file:
@@ -523,6 +523,7 @@ if __name__ == "__main__":
         with open(full_dest_file_path, 'rb') as dest_file:
             res_dict, video_view_list, keyword_video_dict, static_keyword_dict = pickle.load(dest_file)
 
+    bilibili_analysis.video_statistic()
 
 
 
