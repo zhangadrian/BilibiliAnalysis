@@ -441,6 +441,7 @@ class BilibiliAnalysis:
             "danmu": [],
             "like": [],
             "favorite": [],
+            "coin": [],
         }
 
         xtick_dict = {
@@ -450,6 +451,7 @@ class BilibiliAnalysis:
             "danmu": [0, 10, 100, 200, 500, 1000],
             "like": [0, 10, 100, 200, 500, 1000, 2000, 10000],
             "favorite": [0, 10, 100, 200, 500, 1000, 2000, 10000],
+            "coin": [0, 10, 100, 200, 500, 1000, 2000, 10000],
         }
 
         for index, video_file_name in enumerate(video_file_list):
@@ -466,6 +468,7 @@ class BilibiliAnalysis:
             result_dict["danmu"].append(video_info_dict["danmu_num"])
             result_dict["like"].append(video_info_dict["like_num"])
             result_dict["favorite"].append(video_info_dict["favorite_num"])
+            result_dict["coin"].append(video_info_dict["coin_num"])
         res_str = ','.join([str(i) for i in result_dict["view"]])
         for key in result_dict:
             hist_image_path = "./" + key + "_hist.jpg"
