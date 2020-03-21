@@ -22,6 +22,7 @@ class BilibiliAnalysis:
                         input_list.append(int(num_str))
                 else:
                     num_str = data_dict[key]
+                input_list.append(num_str)
 
         else:
             for item in data_dict:
@@ -33,6 +34,7 @@ class BilibiliAnalysis:
                         input_list.append(int(num_str))
                 else:
                     num_str = item[1]
+                input_list.append(num_str)
 
         return input_list
 
