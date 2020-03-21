@@ -14,12 +14,19 @@ class BilibiliAnalysis:
         input_list = []
         if isinstance(data_dict, dict):
             for key in data_dict:
-                num_str, _ = data_dict[key].split('_')
-                input_list.append(int(num_str))
+                num_str = data_dict[key].split('_')[0]
+                try:
+                    input_list.append(int(num_str))
+                except:
+                    input_list.append(int(num_str))
+
         else:
             for item in data_dict:
-                num_str, _ = item[1].split('_')
-                input_list.append(int(num_str))
+                num_str = item[1].split('_')[0]
+                try:
+                    input_list.append(int(num_str))
+                except:
+                    input_list.append(int(num_str))
 
         return input_list
 
@@ -429,6 +436,26 @@ class BilibiliAnalysis:
         print(keyword_video_dict)
         return video_view_list, keyword_video_dict
 
+    def meme_statistic(self, input_dict):
+        xtick_dict = {
+            "view": [0, 10, 100, 200, 500, 1000, 2000, 10000, 100000, 1000000],
+            "duration": [0, 30, 60, 300, 600],
+            "comment": [0, 10, 30, 50, 100, 500],
+            "danmu": [0, 10, 100, 200, 500, 1000],
+            "like": [0, 10, 100, 200, 500, 1000, 2000, 10000],
+            "favorite": [0, 10, 100, 200, 500, 1000, 2000, 10000],
+            "coin": [0, 10, 100, 200, 500, 1000, 2000, 10000],
+        }
+
+        for key in input_dict:
+            meme_data_dict = input_dict[key]
+            meme_data_list = self.get_input_list(meme_data_dict)
+            bar_image_path = "./" + key + "_bar.jpg"
+            x_label_name = key + " number"
+            y_label_name = "meme number"
+            title_str = key + " statistics"
+            self.draw_bar(meme_data_list, x_label_name, y_label_name, title_str, bar_image_path, xtick_dict["view"])
+
     def video_statistic(self):
         import os
 
@@ -478,7 +505,7 @@ class BilibiliAnalysis:
             y_label_name = "video number"
             title_str = key + " statistics"
             hist_num = 10
-            self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, hist_image_path, hist_num)
+            # self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, hist_image_path, hist_num)
             self.draw_bar(result_dict[key], x_label_name, y_label_name, title_str, bar_image_path, xtick_dict[key])
 
 
@@ -524,6 +551,7 @@ if __name__ == "__main__":
             res_dict, video_view_list, keyword_video_dict, static_keyword_dict = pickle.load(dest_file)
 
     bilibili_analysis.video_statistic()
+    bilibili_analysis.meta_analysis(res_dict)
 
 
 
