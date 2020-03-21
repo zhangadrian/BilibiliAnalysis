@@ -14,19 +14,25 @@ class BilibiliAnalysis:
         input_list = []
         if isinstance(data_dict, dict):
             for key in data_dict:
-                num_str = data_dict[key].split('_')[0]
-                try:
-                    input_list.append(int(num_str))
-                except:
-                    input_list.append(int(num_str))
+                if isinstance(data_dict[key], str):
+                    num_str = data_dict[key].split('_')[0]
+                    try:
+                        input_list.append(int(num_str))
+                    except:
+                        input_list.append(int(num_str))
+                else:
+                    num_str = data_dict[key]
 
         else:
             for item in data_dict:
-                num_str = item[1].split('_')[0]
-                try:
-                    input_list.append(int(num_str))
-                except:
-                    input_list.append(int(num_str))
+                if isinstance(item[1], str):
+                    num_str = item[1].split('_')[0]
+                    try:
+                        input_list.append(int(num_str))
+                    except:
+                        input_list.append(int(num_str))
+                else:
+                    num_str = item[1]
 
         return input_list
 
@@ -433,7 +439,6 @@ class BilibiliAnalysis:
                         keyword_video_dict[keyword][video_id] = str(view_num) + "_" + str(0.0)
                     else:
                         keyword_video_dict[keyword] = {video_id: str(view_num) + "_" + str(0.0)}
-        print(keyword_video_dict)
         return video_view_list, keyword_video_dict
 
     def meme_statistic(self, input_dict):
@@ -551,7 +556,7 @@ if __name__ == "__main__":
             res_dict, video_view_list, keyword_video_dict, static_keyword_dict = pickle.load(dest_file)
 
     bilibili_analysis.video_statistic()
-    bilibili_analysis.meta_analysis(res_dict)
+    bilibili_analysis.meme_statistic(res_dict)
 
 
 
