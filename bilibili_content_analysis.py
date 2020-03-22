@@ -520,10 +520,10 @@ class BilibiliAnalysis:
         from sklearn.feature_extraction.text import TfidfTransformer
         from sklearn.feature_extraction.text import CountVectorizer
 
-
         video_path = self.src_video_path
         video_file_list = os.listdir(video_path)
         corpus = []
+        video_keyword_tfidf_dict = {}
         for index, video_file_name in enumerate(video_file_list):
             if index % 10 == 0:
                 print("Video feature.")
@@ -537,11 +537,19 @@ class BilibiliAnalysis:
                 key_num = video_keyword_dict[key]
                 for i in range(key_num):
                     video_keyword_str += key + " "
-            corpus.
+            corpus.append(video_keyword_str)
 
-
-
-
+        vectorizer = CountVectorizer()
+        transformer = TfidfTransformer()
+        tfidf = transformer.fit_transform(vectorizer.fit_transform(corpus))
+        word = vectorizer.get_feature_names()
+        weight = tfidf.toarray()
+        for i in len(word):
+            tf_idf = 0.0
+            for j in len(weight):
+                tf_idf += weight[j][i]
+            video_keyword_tfidf_dict[word[i]] = tf_idf
+        return video_keyword_tfidf_dict
 
 
 if __name__ == "__main__":
@@ -585,8 +593,9 @@ if __name__ == "__main__":
         with open(full_dest_file_path, 'rb') as dest_file:
             res_dict, video_view_list, keyword_video_dict, static_keyword_dict = pickle.load(dest_file)
 
-    bilibili_analysis.video_statistic()
-    bilibili_analysis.meme_statistic(res_dict)
+    # bilibili_analysis.video_statistic()
+    # bilibili_analysis.meme_statistic(res_dict)
+    print(bilibili_analysis.cal_tfidf())
 
 
 
