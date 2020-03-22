@@ -515,6 +515,34 @@ class BilibiliAnalysis:
             # self.draw_hist(result_dict[key], x_label_name, y_label_name, title_str, hist_image_path, hist_num)
             self.draw_bar(result_dict[key], x_label_name, y_label_name, title_str, bar_image_path, xtick_dict[key])
 
+    def cal_tfidf(self):
+        import os
+        from sklearn.feature_extraction.text import TfidfTransformer
+        from sklearn.feature_extraction.text import CountVectorizer
+
+
+        video_path = self.src_video_path
+        video_file_list = os.listdir(video_path)
+        corpus = []
+        for index, video_file_name in enumerate(video_file_list):
+            if index % 10 == 0:
+                print("Video feature.")
+                print(index)
+            video_id = video_file_name.replace('.pkl', '')
+            if not os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")):
+                continue
+            video_root_dict, video_keyword_dict, video_weight_dict = self.video_analysis(video_id)
+            video_keyword_str = ''
+            for key in video_keyword_dict:
+                key_num = video_keyword_dict[key]
+                for i in range(key_num):
+                    video_keyword_str += key + " "
+            corpus.
+
+
+
+
+
 
 if __name__ == "__main__":
     import sys
