@@ -348,7 +348,8 @@ class BilibiliAnalysis:
                 print("get_keyword_freq")
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
-            if not (os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")) or os.path.exists(os.path.join(self.src_dir_path, video_id + ".pkl"))):
+            if not (os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")) or os.path.exists(
+                    os.path.join(self.src_dir_path, video_id + ".pkl"))):
                 continue
             video_root_dict, video_keyword_dict, video_weight_dict = self.video_analysis(video_id)
             comment_dict, danmu_list, info_dict, user_info, video_info = self.meta_analysis(video_id)
@@ -425,7 +426,8 @@ class BilibiliAnalysis:
                 print("Video feature.")
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
-            if not os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")):
+            if not (os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")) or os.path.exists(
+                    os.path.join(self.src_dir_path, video_id + ".pkl"))):
                 continue
             video_root_dict, video_keyword_dict, video_weight_dict = self.video_analysis(video_id)
             comment_dict, danmu_list, info_dict, user_info, video_info = self.meta_analysis(video_id)
@@ -500,7 +502,8 @@ class BilibiliAnalysis:
             if index % 1000000000000001 == 0:
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
-            if not os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")):
+            if not (os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")) or os.path.exists(
+                    os.path.join(self.src_dir_path, video_id + ".pkl"))):
                 continue
             _, _, info_dict, user_info, video_info = self.meta_analysis(video_id)
             video_info_dict = self.extract_video_info(info_dict, user_info, video_info)
@@ -537,7 +540,8 @@ class BilibiliAnalysis:
                 print("Video feature.")
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
-            if not os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")):
+            if not (os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")) or os.path.exists(
+                    os.path.join(self.src_dir_path, video_id + ".pkl"))):
                 continue
             video_root_dict, video_keyword_dict, video_weight_dict = self.video_analysis(video_id)
             video_keyword_str = ''
@@ -564,11 +568,49 @@ class BilibiliAnalysis:
             video_keyword_tfidf_dict[key] = video_keyword_tfidf_dict[key] / word_count_dict[key]
         return video_keyword_tfidf_dict
 
-    def cal_pearson(self):
+    def cal_pearson(self, word_dict):
         import numpy as np
         from scipy.stats import pearsonr
+        from collections import defaultdict
 
-
+        video_keyword_pearson_dict = {}
+        video_keyword_r_dict = {}
+        video_path = self.src_video_path
+        video_file_list = os.listdir(video_path)
+        for index, video_file_name in enumerate(video_file_list):
+            if index % 10 == 0:
+                print("get_keyword_freq")
+                print(index)
+            video_id = video_file_name.replace('.pkl', '')
+            if not (os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")) or os.path.exists(
+                    os.path.join(self.src_dir_path, video_id + ".pkl"))):
+                continue
+            video_root_dict, video_keyword_dict, video_weight_dict = self.video_analysis(video_id)
+            comment_dict, danmu_list, info_dict, user_info, video_info = self.meta_analysis(video_id)
+            video_info_dict = self.extract_video_info(info_dict, user_info, video_info)
+            for keyword in word_dict:
+                if keyword in video_weight_dict:
+                    if keyword in video_keyword_pearson_dict:
+                        video_keyword_pearson_dict[keyword] = [
+                            video_keyword_pearson_dict[keyword][0].append(video_weight_dict[keyword]),
+                            video_keyword_pearson_dict[keyword][1].append(video_info_dict["view_num"])]
+                    else:
+                        video_keyword_pearson_dict[keyword] = [
+                            [video_weight_dict[keyword]],
+                            [video_info_dict["view_num"]]]
+                else:
+                    if keyword in video_keyword_pearson_dict:
+                        video_keyword_pearson_dict[keyword] = [
+                            video_keyword_pearson_dict[keyword][0].append(0.0),
+                            video_keyword_pearson_dict[keyword][1].append(video_info_dict["view_num"])]
+                    else:
+                        video_keyword_pearson_dict[keyword] = [
+                            [0.0],
+                            [video_info_dict["view_num"]]]
+        for keyword in video_keyword_pearson_dict:
+            weight_list, view_num_list = video_keyword_pearson_dict[keyword]
+            video_keyword_r_dict[keyword] = pearsonr(np.array(weight_list), np.array(view_num_list))
+        return video_keyword_r_dict
 
 
 if __name__ == "__main__":
@@ -615,6 +657,7 @@ if __name__ == "__main__":
     # bilibili_analysis.video_statistic()
     # bilibili_analysis.meme_statistic(res_dict)
     print(bilibili_analysis.cal_tfidf())
+    print(bilibili_analysis.cal_pearson(res_dict["top_video_key_word"]))
 
 
 
