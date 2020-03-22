@@ -17,24 +17,24 @@ class BilibiliAnalysis:
                 if isinstance(data_dict[key], str):
                     num_str = data_dict[key].split('_')[0]
                     try:
-                        input_list.append(int(num_str))
+                        input_list.append(int(num_str) + 0.0)
                     except:
-                        input_list.append(int(num_str))
+                        input_list.append(int(num_str) + 0.0)
                 else:
                     num_str = data_dict[key]
-                input_list.append(num_str)
+                    input_list.append(num_str + 0.0)
 
         else:
             for item in data_dict:
                 if isinstance(item[1], str):
                     num_str = item[1].split('_')[0]
                     try:
-                        input_list.append(int(num_str))
+                        input_list.append(int(num_str) + 0.0)
                     except:
-                        input_list.append(int(num_str))
+                        input_list.append(int(num_str) + 0.0)
                 else:
                     num_str = item[1]
-                input_list.append(num_str)
+                    input_list.append(num_str + 0.0)
 
         return input_list
 
@@ -164,10 +164,14 @@ class BilibiliAnalysis:
     def meta_analysis(self, video_id):
         import os
         import pickle
-
-        with open(os.path.join(self.src_dir_path, video_id, video_id + ".pkl"), 'rb') as meta_data_file:
-            meta_data = pickle.load(meta_data_file)
-            comment_dict, danmu_list, info_dict, user_info, video_info = meta_data
+        try:
+            with open(os.path.join(self.src_dir_path, video_id, video_id + ".pkl"), 'rb') as meta_data_file:
+                meta_data = pickle.load(meta_data_file)
+                comment_dict, danmu_list, info_dict, user_info, video_info = meta_data
+        except:
+            with open(os.path.join(self.src_dir_path, video_id + ".pkl"), 'rb') as meta_data_file:
+                meta_data = pickle.load(meta_data_file)
+                comment_dict, danmu_list, info_dict, user_info, video_info = meta_data
         return comment_dict, danmu_list, info_dict, user_info, video_info
 
     def comment_analysis(self, comment_dict):
@@ -271,7 +275,10 @@ class BilibiliAnalysis:
         from collections import defaultdict
         if not url:
             return {}, {}, {}
-        face_data_path = os.path.join(self.src_dir_path, video_id, video_id + "_face.pkl")
+        try:
+            face_data_path = os.path.join(self.src_dir_path, video_id, video_id + "_face.pkl")
+        except:
+            face_data_path = os.path.join(self.src_dir_path, video_id + "_face.pkl")
         face_root_dict = defaultdict(int)
         face_keyword_dict = defaultdict(int)
         face_weight_dict = defaultdict(float)
@@ -341,7 +348,7 @@ class BilibiliAnalysis:
                 print("get_keyword_freq")
                 print(index)
             video_id = video_file_name.replace('.pkl', '')
-            if not os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")):
+            if not (os.path.exists(os.path.join(self.src_dir_path, video_id, video_id + ".pkl")) or os.path.exists(os.path.join(self.src_dir_path, video_id + ".pkl"))):
                 continue
             video_root_dict, video_keyword_dict, video_weight_dict = self.video_analysis(video_id)
             comment_dict, danmu_list, info_dict, user_info, video_info = self.meta_analysis(video_id)
@@ -517,6 +524,7 @@ class BilibiliAnalysis:
 
     def cal_tfidf(self):
         import os
+        from collections import defaultdict
         from sklearn.feature_extraction.text import TfidfTransformer
         from sklearn.feature_extraction.text import CountVectorizer
 
@@ -544,12 +552,23 @@ class BilibiliAnalysis:
         tfidf = transformer.fit_transform(vectorizer.fit_transform(corpus))
         word = vectorizer.get_feature_names()
         weight = tfidf.toarray()
-        for i in len(word):
+        word_count_dict = defaultdict(int)
+        for i in range(len(word)):
             tf_idf = 0.0
-            for j in len(weight):
+            for j in range(len(weight)):
                 tf_idf += weight[j][i]
+                if weight[j][i] > 0.0:
+                    word_count_dict[word[i]] += 1
             video_keyword_tfidf_dict[word[i]] = tf_idf
+        for key in video_keyword_tfidf_dict:
+            video_keyword_tfidf_dict[key] = video_keyword_tfidf_dict[key] / word_count_dict[key]
         return video_keyword_tfidf_dict
+
+    def cal_pearson(self):
+        import numpy as np
+        from scipy.stats import pearsonr
+
+
 
 
 if __name__ == "__main__":
